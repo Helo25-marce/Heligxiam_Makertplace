@@ -1,0 +1,43 @@
+<div class="cart-container">
+  <h2>Shopping Cart</h2>
+  
+  <div *ngIf="cartItems.length === 0" class="empty-cart">
+    <p>Your cart is empty</p>
+    <button mat-raised-button routerLink="/products">Continue Shopping</button>
+  </div>
+  
+  <div *ngIf="cartItems.length > 0">
+    <div class="cart-items">
+      <mat-card *ngFor="let item of cartItems" class="cart-item">
+        <mat-card-content>
+          <div class="item-details">
+            <img [src]="item.image" [alt]="item.name" class="item-image">
+            <div class="item-info">
+              <h3>{{ item.name }}</h3>
+              <p class="price">{{ item.price | currency:'USD':'symbol':'1.0-0' }}</p>
+            </div>
+          </div>
+          <div class="quantity-controls">
+            <button mat-icon-button (click)="decreaseQuantity(item)">
+              <mat-icon>remove</mat-icon>
+            </button>
+            <span class="quantity">{{ item.quantity }}</span>
+            <button mat-icon-button (click)="increaseQuantity(item)">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+          <button mat-icon-button color="warn" (click)="removeItem(item)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </mat-card-content>
+      </mat-card>
+    </div>
+    
+    <div class="cart-summary">
+      <h3>Total: {{ totalAmount | currency:'USD':'symbol':'1.0-0' }}</h3>
+      <button mat-raised-button color="primary" (click)="checkout()">
+        Proceed to Checkout
+      </button>
+    </div>
+  </div>
+</div>
