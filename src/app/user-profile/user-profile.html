@@ -1,1 +1,88 @@
-<p>user-profile works!</p>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Authentification</title>
+    <link rel="stylesheet" href="auth.css">
+</head>
+<body>
+
+<div class="container">
+
+    <h1>Mon E-Commerce</h1>
+
+    <!-- Onglets -->
+    <div class="switch">
+
+        <input type="radio" id="loginTab" name="tabs" checked>
+        <label for="loginTab">Connexion</label>
+
+        <input type="radio" id="registerTab" name="tabs">
+        <label for="registerTab">Inscription</label>
+
+        <!-- ================= CONNEXION ================= -->
+        <div class="form login">
+
+            <form action="#" method="POST">
+
+                <h2>Connexion</h2>
+
+                <div class="field">
+                    <label>Email</label>
+                    <input type="email" name="email" placeholder="ex: mail@email.com" required>
+                </div>
+
+                <div class="field">
+                    <label>Mot de passe</label>
+                    <input type="password" name="password" placeholder="••••••••" required>
+                </div>
+
+                <div class="buttons">
+                    <button type="submit" class="primary">Se connecter</button>
+                    <button type="reset" class="secondary">Effacer</button>
+                </div>
+
+            </form>
+        </div>
+
+        <!-- ================= INSCRIPTION ================= -->
+        <div class="form register">
+
+            <form action="#" method="POST">
+
+                <h2>Inscription</h2>
+
+                <div class="field">
+                    <label>Nom complet</label>
+                    <input type="text" name="nom" placeholder="Votre nom" required>
+                </div>
+
+                <div class="field">
+                    <label>Email</label>
+                    <input type="email" name="email" required>
+                </div>
+
+                <div class="field">
+                    <label>Mot de passe</label>
+                    <input type="password" name="password" required>
+                </div>
+
+                <div class="field">
+                    <label>Confirmer mot de passe</label>
+                    <input type="password" name="confirm" required>
+                </div>
+
+                <div class="buttons">
+                    <button type="submit" class="primary">S'inscrire</button>
+                    <button type="reset" class="secondary">Réinitialiser</button>
+                </div>
+
+            </form>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>
+
