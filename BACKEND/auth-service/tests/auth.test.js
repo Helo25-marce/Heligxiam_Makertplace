@@ -107,6 +107,32 @@ describe('Auth Service', () => {
       expect(getPasswordStrength('Medium123')).toBe('moyen');
       expect(getPasswordStrength('StrongPassword123!@#')).toBe('fort');
     });
+
+    test('password hashing should include pepper', async () => {
+      // Temporarily set pepper
+      process.env.PEPPER = 'pepper123';
+      const raw = 'MySecret!';
+      const user = await User.create({
+        nom: 'Pepper',
+        prenom: 'Test',
+        email: 'pepper@example.com',
+        password: raw,
+        role: 'client'
+      });
+      const hashWithPepper = user.password_hash;
+
+      // Changing pepper should break comparison
+      process.env.PEPPER = 'other';
+      const checkWrong = await user.checkPassword(raw);
+      expect(checkWrong).toBe(false);
+
+      // restore correct pepper
+      process.env.PEPPER = 'pepper123';
+      const checkRight = await user.checkPassword(raw);
+      expect(checkRight).toBe(true);
+
+      await User.delete(user.id_user);
+    });
   });
 
   describe('User Registration', () => {

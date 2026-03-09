@@ -39,6 +39,15 @@ testem.log
 /typings
 __screenshots__/
 
+# Environment configuration (never commit secrets)
+*.env
+auth-service/.env
+BACKEND/auth-service/.env
+
+# Logs and runtime artifacts
+logs/
+*.log
+
 # System files
 .DS_Store
 Thumbs.db

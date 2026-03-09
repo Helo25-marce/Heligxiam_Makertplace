@@ -18,9 +18,16 @@ class User {
   static async create(userData) {
     const { nom, prenom, email, password, role = 'client' } = userData;
 
-    // Hash du mot de passe
+    // Combiner le mot de passe avec le 'pepper' secret avant de hasher.
+    // Le pepper est une valeur globale stockée dans l'environnement et
+    // jamais enregistrée en base. Il renforce la sécurité en plus du sel
+    // unique généré par bcrypt.
+    const pepper = process.env.PEPPER || '';
+    const toHash = password + pepper;
+
+    // Hash du mot de passe (bcrypt gère le sel internement)
     const saltRounds = parseInt(process.env.BCRYPT_ROUNDS) || 12;
-    const password_hash = await bcrypt.hash(password, saltRounds);
+    const password_hash = await bcrypt.hash(toHash, saltRounds);
 
     const queryText = `
       INSERT INTO "Utilisateur" (nom, prenom, email, password_hash, role)
@@ -65,13 +72,17 @@ class User {
 
   // Vérifier le mot de passe
   async checkPassword(password) {
-    return await bcrypt.compare(password, this.password_hash);
+    const pepper = process.env.PEPPER || '';
+    const toCheck = password + pepper;
+    return await bcrypt.compare(toCheck, this.password_hash);
   }
 
   // Mettre à jour le mot de passe
   static async updatePassword(id_user, newPassword) {
+    const pepper = process.env.PEPPER || '';
+    const toHash = newPassword + pepper;
     const saltRounds = parseInt(process.env.BCRYPT_ROUNDS) || 12;
-    const password_hash = await bcrypt.hash(newPassword, saltRounds);
+    const password_hash = await bcrypt.hash(toHash, saltRounds);
 
     const queryText = `
       UPDATE "Utilisateur"

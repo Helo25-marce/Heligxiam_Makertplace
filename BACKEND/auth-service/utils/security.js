@@ -60,6 +60,14 @@ const validatePassword = (password) => {
   return passwordRegex.test(password);
 };
 
+// Ajoute un "pepper" global à un mot de passe. Le pepper est une valeur
+// secrète stockée dans l'environnement et non en base de données. Cela renforce
+// la sécurité en plus du salt généré automatiquement par bcrypt.
+const applyPepper = (password) => {
+  const pepper = process.env.PEPPER || '';
+  return password + pepper;
+};
+
 // Génération de tokens sécurisés
 const generateSecureToken = (length = 32) => {
   return crypto.randomBytes(length).toString('hex');
@@ -156,6 +164,7 @@ module.exports = {
   sanitizeInput,
   isValidEmail,
   validatePassword,
+  applyPepper,
   generateSecureToken,
   hashToken,
   getPasswordStrength,

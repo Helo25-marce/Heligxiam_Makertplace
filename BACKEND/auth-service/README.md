@@ -28,7 +28,7 @@ Le service utilise un algorithme de preuve de travail pour protéger contre les 
 - **Administrateur**: Limites spécifiques pour les opérations sensibles
 
 ### Protection des Données
-- **Chiffrement des mots de passe** avec bcrypt (12 rounds)
+- **Chiffrement des mots de passe** avec bcrypt (12 rounds) + pepper global
 - **Sanitisation des entrées** pour éviter les XSS
 - **Validation des emails** et mots de passe
 - **Protection contre les injections SQL**
@@ -197,6 +197,33 @@ Lister tous les utilisateurs (pagination).
 **Query parameters:**
 - `page`: numéro de page (défaut: 1)
 - `limit`: nombre d'utilisateurs par page (défaut: 50)
+
+---
+
+## 📁 Structure du microservice
+
+```text
+auth-service/
+├── server.js               # Entrée principale
+├── app.js                  # Configuration Express
+├── package.json            # Dépendances et scripts
+├── .env                    # Variables d'environnement (ne pas committer)
+├── .env.example            # Exemple de configuration
+├── README.md               # Cette documentation
+├── SECURITY.md             # Détails des mécanismes de sécurité
+├── setup.sh                # Script d'installation automatique
+├── config/                 # Configuration PostgreSQL
+├── controllers/            # Logique métier des routes
+├── middleware/             # Authentification et JWT
+├── models/                 # Accès aux données (User.js)
+├── routes/                 # Définitions des routes API
+├── utils/                  # Fonctions utilitaires de sécurité
+├── tests/                  # Tests unitaires (Jest)
+└── logs/                   # Fichiers de log générés
+```
+
+Consultez `SECURITY.md` pour un résumé des protections en place.
+
 
 #### `DELETE /api/auth/users/:userId`
 Supprimer un utilisateur.
