@@ -7,7 +7,7 @@ const {
   generateRefreshToken,
   authenticate,
   requireAdmin
-} = require('../middleware/auth');
+} = require('../middleware/auth');  
 const {
   ProofOfWork,
   sanitizeInput,

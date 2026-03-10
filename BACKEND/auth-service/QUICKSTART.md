@@ -1,4 +1,4 @@
-# 🚀 Quickstart pour le microservice utilisateur
+# Quickstart pour le microservice utilisateur
 
 Ce fichier fournit des commandes rapides pour démarrer et tester les principales routes.
 Il se veut un résumé de la documentation plus complète dans `README.md`.

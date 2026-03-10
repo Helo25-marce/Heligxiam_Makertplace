@@ -2,7 +2,7 @@
 
 Un microservice d'authentification sécurisé pour la plateforme de marketplace Heligxiam, construit avec Node.js, Express.js et PostgreSQL.
 
-## 🚀 Fonctionnalités
+## Fonctionnalités
 
 - **Inscription et connexion sécurisées** avec validation avancée
 - **Authentification JWT** avec tokens d'accès et de rafraîchissement
@@ -17,7 +17,7 @@ Un microservice d'authentification sécurisé pour la plateforme de marketplace 
 - **Gestion d'erreurs** robuste
 - **Tests unitaires** avec Jest
 
-## 🛡️ Sécurité
+## Sécurité
 
 ### Proof of Work
 Le service utilise un algorithme de preuve de travail pour protéger contre les attaques DoS. Chaque requête d'inscription/connexion doit résoudre un challenge cryptographique.
@@ -34,13 +34,13 @@ Le service utilise un algorithme de preuve de travail pour protéger contre les 
 - **Protection contre les injections SQL**
 - **Headers de sécurité** avec Helmet.js
 
-## 📋 Prérequis
+## Prérequis
 
 - Node.js >= 16.0.0
 - PostgreSQL >= 12.0
 - npm ou yarn
 
-## 🛠️ Installation
+## Installation
 
 1. **Cloner le repository**
    ```bash
@@ -96,7 +96,7 @@ Le service utilise un algorithme de preuve de travail pour protéger contre les 
    npm start
    ```
 
-## 📚 API Documentation
+## API Documentation
 
 ### Endpoints Publics
 

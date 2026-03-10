@@ -182,9 +182,9 @@ const startServer = async () => {
         version: process.env.npm_package_version || '1.0.0'
       });
 
-      console.log(`🚀 Auth service running on port ${PORT}`);
-      console.log(`📊 Health check: http://localhost:${PORT}/health`);
-      console.log(`🔐 Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`Auth service running on port ${PORT}`);
+      console.log(`Health check: http://localhost:${PORT}/health`);
+      console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
     });
 
   } catch (error) {

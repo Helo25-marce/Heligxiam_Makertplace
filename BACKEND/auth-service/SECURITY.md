@@ -1,9 +1,9 @@
-# 🔐 Sécurité du Microservice d'Authentification
+# Sécurité du Microservice d'Authentification
 
 Ce document décrit les mécanismes de sécurité mis en place dans le service utilisateur.
 Il complète la section "Sécurité" du `README.md`.
 
-## 🛡️ Chiffrement et Hashage
+## Chiffrement et Hashage
 
 * **bcrypt** est utilisé pour hacher les mots de passe avant stockage.  
   - Niveau de coût configurable via la variable d'environnement `BCRYPT_ROUNDS` (par défaut 12).  

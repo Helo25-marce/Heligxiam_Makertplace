@@ -36,7 +36,24 @@ const query = async (text, params) => {
   }
 };
 
+// Test de connexion à la base de données
+const testConnection = async () => {
+  try {
+    await pool.query('SELECT 1');
+    return true;
+  } catch (err) {
+    throw new Error(`Database connection failed: ${err.message}`);
+  }
+};
+
+// Fermeture propre de la connexion
+const close = async () => {
+  await pool.end();
+};
+
 module.exports = {
   pool,
-  query
+  query,
+  testConnection,
+  close
 };

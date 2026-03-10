@@ -211,7 +211,7 @@ Time estimate: 3-5 jours
 
 ---
 
-## 🚀 COMMANDES DE DÉMARRAGE
+## COMMANDES DE DÉMARRAGE
 
 ```bash
 # Développement
@@ -232,7 +232,7 @@ curl http://localhost:3001/api/auth/health
 
 ---
 
-## 📚 DOCUMENTATION
+## DOCUMENTATION
 
 Tous les détails sont disponibles dans:
 - [API_COMPLIANCE_REPORT.md](./API_COMPLIANCE_REPORT.md) - Rapport détaillé des routes
