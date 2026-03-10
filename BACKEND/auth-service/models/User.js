@@ -183,6 +183,24 @@ class User {
     return parseInt(result.rows[0].total);
   }
 
+  // Mettre à jour le rôle d'un utilisateur
+  static async updateRole(id_user, role) {
+    const queryText = `
+      UPDATE "Utilisateur"
+      SET role = $1, updated_at = NOW()
+      WHERE id_user = $2
+      RETURNING *
+    `;
+
+    const result = await query(queryText, [role, id_user]);
+
+    if (result.rows.length === 0) {
+      throw new Error('Utilisateur non trouvé');
+    }
+
+    return new User(result.rows[0]);
+  }
+
   // Méthode toJSON pour la réponse API
   toJSON() {
     return {

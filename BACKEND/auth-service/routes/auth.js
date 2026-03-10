@@ -335,8 +335,8 @@ router.post('/refresh-token', validateInput, async (req, res) => {
 // ROUTES PROTÉGÉES
 // ========================================
 
-// Obtenir le profil utilisateur
-router.get('/profile', authenticate, async (req, res) => {
+// Obtenir le profil utilisateur connecté (GET /auth/me)
+router.get('/me', authenticate, async (req, res) => {
   try {
     const profile = await User.getProfile(req.user.id_user);
 
@@ -361,17 +361,103 @@ router.get('/profile', authenticate, async (req, res) => {
   }
 });
 
-// Mettre à jour le profil
-router.put('/profile',
+// Obtenir le profil d'un utilisateur spécifique (GET /users/:userId)
+router.get('/user/:userId', authenticate, async (req, res) => {
+  try {
+    const { userId } = req.params;
+    
+    // Vérifier les autorisations
+    if (req.user.id_user !== userId && req.user.role !== 'admin') {
+      secureLog('warn', 'Unauthorized user profile access attempt', {
+        requesterId: req.user.id_user,
+        targetId: userId
+      });
+      return res.status(403).json({
+        success: false,
+        message: 'Accès refusé'
+      });
+    }
+
+    const userProfile = await User.findById(userId);
+
+    if (!userProfile) {
+      return res.status(404).json({
+        success: false,
+        message: 'Utilisateur non trouvé'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        userId: userProfile.id_user,
+        username: `${userProfile.nom} ${userProfile.prenom}`,
+        email: userProfile.email,
+        role: userProfile.role,
+        createdAt: userProfile.created_at,
+        stats: {
+          ordersCount: 0, // À implémenter avec les commandes
+          productsCount: 0 // À implémenter avec les produits
+        }
+      }
+    });
+
+  } catch (error) {
+    secureLog('error', 'User profile fetch failed', { error: error.message });
+    res.status(500).json({
+      success: false,
+      message: 'Erreur lors de la récupération du profil utilisateur'
+    });
+  }
+});
+
+// Logout - Invalider le token
+router.post('/logout', authenticate, async (req, res) => {
+  try {
+    // Dans une implémentation réelle, on ajouterait le token à une blacklist
+    // ou on pourrait révoquer le token dans la base de données
+    
+    secureLog('info', 'User logged out', {
+      userId: req.user.id_user,
+      ip: req.ip
+    });
+
+    res.status(204).send();
+
+  } catch (error) {
+    secureLog('error', 'Logout failed', { error: error.message });
+    res.status(500).json({
+      success: false,
+      message: 'Erreur lors de la déconnexion'
+    });
+  }
+});
+
+// Mettre à jour le profil utilisateur (PUT /users/:userId)
+router.put('/user/:userId',
   authenticate,
   validateInput,
   [
-    body('nom').optional().trim().isLength({ min: 2, max: 100 }),
-    body('prenom').optional().trim().isLength({ min: 2, max: 100 }),
-    body('email').optional().isEmail().normalizeEmail()
+    body('username').optional().trim().isLength({ min: 3, max: 30 }),
+    body('email').optional().isEmail().normalizeEmail(),
+    body('password').optional().isLength({ min: 8 })
   ],
   async (req, res) => {
     try {
+      const { userId } = req.params;
+      
+      // Vérifier les autorisations
+      if (req.user.id_user !== userId && req.user.role !== 'admin') {
+        secureLog('warn', 'Unauthorized profile update attempt', {
+          requesterId: req.user.id_user,
+          targetId: userId
+        });
+        return res.status(403).json({
+          success: false,
+          message: 'Accès refusé'
+        });
+      }
+
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return res.status(400).json({
@@ -381,20 +467,24 @@ router.put('/profile',
         });
       }
 
-      const updatedUser = await User.updateProfile(req.user.id_user, req.body);
+      const updatedUser = await User.updateProfile(userId, req.body);
 
-      secureLog('info', 'Profile updated', { userId: req.user.id_user });
+      secureLog('info', 'User profile updated', { userId });
 
       res.json({
         success: true,
-        message: 'Profil mis à jour avec succès',
-        data: updatedUser.toJSON()
+        data: {
+          userId: updatedUser.id_user,
+          username: `${updatedUser.nom} ${updatedUser.prenom}`,
+          email: updatedUser.email,
+          role: updatedUser.role
+        }
       });
 
     } catch (error) {
       secureLog('error', 'Profile update failed', {
         error: error.message,
-        userId: req.user.id_user
+        userId: req.params.userId
       });
 
       if (error.message === 'Email déjà utilisé') {
@@ -476,6 +566,67 @@ router.put('/change-password',
   }
 );
 
+// Changer le rôle d'un utilisateur (PUT /users/:userId/role) - Admin seulement
+router.put('/user/:userId/role',
+  authenticate,
+  requireAdmin,
+  validateInput,
+  [
+    body('role').isIn(['client', 'vendeur', 'admin']).withMessage('Rôle invalide')
+  ],
+  async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const { role } = req.body;
+
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          success: false,
+          message: 'Données invalides',
+          errors: errors.array()
+        });
+      }
+
+      // Trouver l'utilisateur
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: 'Utilisateur non trouvé'
+        });
+      }
+
+      // Mettre à jour le rôle
+      const updatedUser = await User.updateRole(userId, role);
+
+      secureLog('info', 'User role updated by admin', {
+        userId,
+        newRole: role,
+        adminId: req.user.id_user
+      });
+
+      res.json({
+        success: true,
+        data: {
+          userId: updatedUser.id_user,
+          role: updatedUser.role
+        }
+      });
+
+    } catch (error) {
+      secureLog('error', 'Role update failed', {
+        error: error.message,
+        userId: req.params.userId
+      });
+      res.status(500).json({
+        success: false,
+        message: 'Erreur lors de la mise à jour du rôle'
+      });
+    }
+  }
+);
+
 // ========================================
 // ROUTES ADMINISTRATEUR
 // ========================================
@@ -495,7 +646,13 @@ router.get('/users', authenticate, requireAdmin, async (req, res) => {
     res.json({
       success: true,
       data: {
-        users: users.map(user => user.toJSON()),
+        users: users.map(user => ({
+          userId: user.id_user,
+          username: `${user.nom} ${user.prenom}`,
+          email: user.email,
+          role: user.role,
+          createdAt: user.created_at
+        })),
         pagination: {
           page,
           limit,
@@ -514,8 +671,8 @@ router.get('/users', authenticate, requireAdmin, async (req, res) => {
   }
 });
 
-// Supprimer un utilisateur (admin)
-router.delete('/users/:userId',
+// Supprimer un utilisateur (admin) - DELETE /users/:userId
+router.delete('/user/:userId',
   authenticate,
   requireAdmin,
   async (req, res) => {
@@ -544,10 +701,7 @@ router.delete('/users/:userId',
         adminId: req.user.id_user
       });
 
-      res.json({
-        success: true,
-        message: 'Utilisateur supprimé avec succès'
-      });
+      res.status(204).send();
 
     } catch (error) {
       secureLog('error', 'User deletion failed', {
