@@ -1,4 +1,22 @@
 # See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
+# Dépendances et builds
+node_modules/
+frontend/node_modules/
+services/**/node_modules/
+heligxiam-marketplace/**/node_modules/
+dist/
+coverage/
+.angular/
+.qoder/
+.qodo/
+# Environnements sensibles
+.env
+**/.env
+
+# OS/IDE
+.DS_Store
+Thumbs.db
+.vscode/
 
 # Compiled output
 /dist
